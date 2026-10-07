@@ -1,0 +1,16 @@
+{
+  "name": "memory-atlas-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Memory Atlas — a four-substrate agent memory lab: watch flat recall serve stale facts, and governed recall route each question to its source of truth.",
+  "scripts": {
+    "start": "node app/server.js",
+    "report": "node scripts/atlas-report.mjs",
+    "test": "node --test \"test/*.test.mjs\"",
+    "check": "npm test && npm run report"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

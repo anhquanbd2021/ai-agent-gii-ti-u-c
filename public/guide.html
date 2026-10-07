@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Memory Atlas — guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/styles.css">
+<!-- pb-shell --><link rel="stylesheet" href="./pb-shell.css"><!-- pb-shell --><!-- pb-back --><link rel="stylesheet" href="./pb-back.css"><!-- pb-back --></head>
+<body class="guide">
+  <a class="skip" href="#main">Skip to content</a>
+  <header>
+    <div class="masthead">
+      <h1>How Memory Atlas works</h1>
+      <nav><a href="/">&larr; back to the lab</a></nav>
+    </div>
+  </header>
+  <main id="main" tabindex="-1">
+    <section>
+      <h2>The idea</h2>
+      <p>"Agent memory" is not one store — it is four substrates with
+      different lifecycles and different sources of truth. Memory Atlas
+      seeds all four for a fictional <em>payments</em> service, then lets
+      you ask five questions and watch two recall strategies disagree.</p>
+      <ul>
+        <li><strong>Chat Memory</strong> (episodic) — dialogue claims.
+          Session-scoped, decays over turns, lowest authority.</li>
+        <li><strong>Skill</strong> (procedural) — candidate procedures
+          distilled from runs; recallable only after enough successes.</li>
+        <li><strong>LLM-Wiki</strong> (semantic) — curated, citable
+          knowledge like runbooks and ownership.</li>
+        <li><strong>Code-Graph</strong> (structural) — facts extracted
+          from the repo itself (<code>deploy.yaml</code>, lockfiles,
+          source imports). Highest authority for "what is true now".</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>The bug: flat recall</h2>
+      <p>Flat recall ranks every stored claim by recency and confidence.
+      In the seeded scenario a user recently repeated an outdated habit
+      ("ship to eu-west-1") — so flat recall answers a structural
+      question from an episodic substrate and gets it wrong. The same
+      happens for the datastore ("we're moving to Postgres" vs. the
+      <code>better-sqlite3</code> import still in the code) and for an
+      unproven one-run "skill".</p>
+    </section>
+
+    <section>
+      <h2>The fix: governed recall</h2>
+      <ul>
+        <li><strong>Routing</strong> — each question kind has a source of
+          truth: structural → code-graph, semantic → wiki,
+          procedural → skill, episodic → chat.</li>
+        <li><strong>TTL</strong> — episodic entries expire after
+          <code>chatTtlTurns</code> idle turns.</li>
+        <li><strong>Scope</strong> — chat from other sessions does not
+          leak into this one.</li>
+        <li><strong>Promotion</strong> — a candidate skill is recallable
+          only after <code>skillMinRuns</code> successes.</li>
+        <li><strong>Provenance</strong> — every entry carries evidence
+          (file:line, runbook version, run ids) so answers drill down to
+          ground truth.</li>
+      </ul>
+      <p>Note the asymmetry: governed recall still answers the standup
+      question from chat — episodic memory is the <em>right</em>
+      substrate for episodic questions. The discipline is routing, not
+      distrust.</p>
+    </section>
+
+    <section>
+      <h2>Run it</h2>
+      <ul>
+        <li><code>npm start</code> — serve this lab (PORT env, default 3000)</li>
+        <li><code>npm run report</code> — CLI side-by-side from the disk fixtures in <code>examples/</code></li>
+        <li><code>npm test</code> — node:test suite (memory semantics, code-graph extraction, scenario, server, fixture parity)</li>
+        <li><code>npm run check</code> — tests + report, used by render.yaml</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Honest limits</h2>
+      <p>This is a toy: routing is a static table, extraction is regex
+      over four fixture files, and "turns" are integers not wall-clock
+      time. Real systems (e.g. TencentDB Agent Memory) add embeddings,
+      hybrid retrieval, and layered L0→L3 compaction — but the failure
+      mode reproduced here is real: any recall path that ignores which
+      substrate a fact came from will eventually serve a stale fact with
+      full confidence.</p>
+    </section>
+  </main>
+<!-- pb-shell --><a class="pb-shell" href="https://github.com/anhquanbd2021/ai-agent-gii-ti-u-c" title="ai-agent-gii-ti-u-c — an Article Playbook demo (view source)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="2" width="9" height="9" rx="2" fill="#2dd4bf"/><rect x="13" y="2" width="9" height="9" rx="2" fill="#2dd4bf" opacity=".45"/><rect x="2" y="13" width="9" height="9" rx="2" fill="#2dd4bf" opacity=".45"/><rect x="13" y="13" width="9" height="9" rx="4.5" fill="#2dd4bf"/></svg><b>ai-agent-gii-ti-u-c</b><i>DEMO</i></a><!-- pb-shell --><!-- pb-back --><a class="pb-back" id="pb-back" href="https://github.com/anhquanbd2021/ai-agent-gii-ti-u-c" title="Back to the article — ai-agent-gii-ti-u-c">← Article <i>PLAYBOOK</i></a><script>(function(){var a=document.getElementById('pb-back');if(!a)return;var h=location.hostname;if(/^(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/.test(h)){a.href='//'+h+':'+(/^(localhost|127\.0\.0\.1)$/.test(h)?'1234':'30082')+'/microsites/article.html?slug=ai-agent-gii-ti-u-c';}})();</script><!-- pb-back --></body>
+</html>

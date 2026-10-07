@@ -1,0 +1,71 @@
+{
+  "chatLog": [
+    { "sessionId": 1, "turn": 2, "key": "deploy.region", "value": "eu-west-1", "confidence": 0.8 },
+    { "sessionId": 2, "turn": 9, "key": "standup.time", "value": "09:00", "confidence": 0.7 },
+    { "sessionId": 4, "turn": 30, "key": "datastore", "value": "postgres", "confidence": 0.75 },
+    { "sessionId": 4, "turn": 31, "key": "deploy.region", "value": "eu-west-1", "confidence": 0.8 },
+    { "sessionId": 4, "turn": 32, "key": "standup.time", "value": "10:30", "confidence": 0.9 }
+  ],
+  "wiki": [
+    {
+      "key": "deploy.preStep",
+      "value": "run migrations first",
+      "source": "runbook v3, reviewed 2026-08-14"
+    },
+    {
+      "key": "service.owner",
+      "value": "team-payments",
+      "source": "service catalog"
+    }
+  ],
+  "skillRuns": [
+    { "skill": "deploy.preStep::restart the queue before deploying", "success": true, "provenance": "run #118", "turn": 28 },
+    { "skill": "deploy.rollback::re-deploy the previous image tag", "success": true, "provenance": "run #87", "turn": 12 },
+    { "skill": "deploy.rollback::re-deploy the previous image tag", "success": true, "provenance": "run #102", "turn": 18 },
+    { "skill": "deploy.rollback::re-deploy the previous image tag", "success": true, "provenance": "run #110", "turn": 25 },
+    { "skill": "deploy.rollback::re-deploy the previous image tag", "success": true, "provenance": "run #121", "turn": 29 }
+  ],
+  "queries": [
+    {
+      "id": "region",
+      "text": "Where does the payments service deploy?",
+      "key": "deploy.region",
+      "kind": "structural",
+      "truth": "us-east-1"
+    },
+    {
+      "id": "datastore",
+      "text": "Which datastore does the code actually use?",
+      "key": "datastore",
+      "kind": "structural",
+      "truth": "sqlite"
+    },
+    {
+      "id": "standup",
+      "text": "What time is standup today?",
+      "key": "standup.time",
+      "kind": "episodic",
+      "truth": "10:30"
+    },
+    {
+      "id": "prestep",
+      "text": "What should happen right before a deploy?",
+      "key": "deploy.preStep",
+      "kind": "procedural",
+      "truth": "run migrations first"
+    },
+    {
+      "id": "rollback",
+      "text": "How do we roll back a bad deploy?",
+      "key": "deploy.rollback",
+      "kind": "procedural",
+      "truth": "re-deploy the previous image tag"
+    }
+  ],
+  "context": {
+    "turn": 33,
+    "sessionId": 4,
+    "chatTtlTurns": 24,
+    "skillMinRuns": 3
+  }
+}

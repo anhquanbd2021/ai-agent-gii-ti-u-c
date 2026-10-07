@@ -1,0 +1,4 @@
+# Fixture deploy manifest for the Memory Atlas lab.
+service: payments
+region: us-east-1
+replicas: 3
